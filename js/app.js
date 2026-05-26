@@ -35,7 +35,10 @@ const bgInput       = document.getElementById('bg-color');
 const brightnessEl  = document.getElementById('brightness');
 const contrastEl    = document.getElementById('contrast');
 const pixelScaleEl  = document.getElementById('pixel-scale');
-const downloadBtn   = document.getElementById('download');
+const downloadBtn       = document.getElementById('download');
+const downloadBannerBtn = document.getElementById('download-banner');
+const bannerGridEl      = document.getElementById('banner-grid');
+const bannerSizeHint    = document.getElementById('banner-size-hint');
 const processingEl  = document.getElementById('processing');
 const emptyState    = document.getElementById('empty-state');
 const canvasInfo    = document.getElementById('canvas-info');
@@ -46,8 +49,45 @@ const brightnessVal = document.getElementById('brightness-val');
 const contrastVal   = document.getElementById('contrast-val');
 const pixelScaleVal = document.getElementById('pixel-scale-val');
 
+const BANNER_PRESETS = [
+  { id: 'linkedin-banner',  label: 'LI Banner',   w: 1584, h: 396  },
+  { id: 'linkedin-post',    label: 'LI Post',      w: 1200, h: 627  },
+  { id: 'twitter-header',   label: 'X/TW Header',  w: 1500, h: 500  },
+  { id: 'youtube-thumb',    label: 'YT Thumb',     w: 1280, h: 720  },
+  { id: 'youtube-art',      label: 'YT Art',       w: 2560, h: 1440 },
+  { id: 'discord-banner',   label: 'Discord',      w: 960,  h: 540  },
+  { id: 'twitch-banner',    label: 'Twitch',       w: 1920, h: 480  },
+  { id: 'facebook-cover',   label: 'FB Cover',     w: 820,  h: 312  },
+  { id: 'instagram-post',   label: 'IG Square',    w: 1080, h: 1080 },
+  { id: 'instagram-story',  label: 'IG Story',     w: 1080, h: 1920 },
+];
+
 let originalImageData = null;
 let debounceTimer = null;
+let selectedBanner = null;
+
+// ─── BANNER BUTTONS ────────────────────────────────────────────────────────
+
+BANNER_PRESETS.forEach(preset => {
+  const btn = document.createElement('button');
+  btn.className = 'banner-btn';
+  btn.innerHTML = `<span class="btn-platform">${preset.label}</span><span class="btn-dims">${preset.w}×${preset.h}</span>`;
+  btn.addEventListener('click', () => {
+    if (selectedBanner?.id === preset.id) {
+      selectedBanner = null;
+      btn.classList.remove('active');
+      bannerSizeHint.textContent = '—';
+      if (originalImageData) downloadBannerBtn.disabled = true;
+    } else {
+      selectedBanner = preset;
+      document.querySelectorAll('.banner-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      bannerSizeHint.textContent = `${preset.w}×${preset.h}`;
+      if (originalImageData) downloadBannerBtn.disabled = false;
+    }
+  });
+  bannerGridEl.appendChild(btn);
+});
 
 // ─── PALETTE BUTTONS ───────────────────────────────────────────────────────
 
@@ -86,6 +126,8 @@ function loadFile(file) {
       originalImageData = tmp.getContext('2d').getImageData(0, 0, tmp.width, tmp.height);
       emptyState.style.display = 'none';
       canvas.style.display = 'block';
+      downloadBtn.disabled = false;
+      if (selectedBanner) downloadBannerBtn.disabled = false;
       process();
     };
     img.src = e.target.result;
@@ -210,5 +252,29 @@ downloadBtn.addEventListener('click', () => {
   const a = document.createElement('a');
   a.download = `ditherpunk-${algoSelect.value}.png`;
   a.href = canvas.toDataURL('image/png');
+  a.click();
+});
+
+downloadBannerBtn.addEventListener('click', () => {
+  if (!originalImageData || !selectedBanner) return;
+  const { w, h, id } = selectedBanner;
+  const out = document.createElement('canvas');
+  out.width  = w;
+  out.height = h;
+  const octx = out.getContext('2d');
+
+  // cover: scale to fill, center-crop
+  const scale   = Math.max(w / canvas.width, h / canvas.height);
+  const scaledW = canvas.width  * scale;
+  const scaledH = canvas.height * scale;
+  const dx = (w - scaledW) / 2;
+  const dy = (h - scaledH) / 2;
+
+  octx.imageSmoothingEnabled = false;
+  octx.drawImage(canvas, dx, dy, scaledW, scaledH);
+
+  const a = document.createElement('a');
+  a.download = `ditherpunk-${algoSelect.value}-${id}.png`;
+  a.href = out.toDataURL('image/png');
   a.click();
 });

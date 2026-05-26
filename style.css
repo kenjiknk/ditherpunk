@@ -289,13 +289,54 @@ input[type="range"]::-moz-range-thumb {
   color: var(--dim);
 }
 
-.export-hint {
-  font-size: 9px;
-  color: var(--dim);
-  margin-top: 8px;
-  letter-spacing: 1px;
-  text-align: center;
+/* ── BANNER EXPORT ───────────────────────────────────────────────────── */
+
+.banner-section {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
 }
+
+.banner-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.banner-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.banner-btn {
+  border: 1px solid var(--border2);
+  background: var(--panel2);
+  color: var(--dim2);
+  font-family: var(--font);
+  font-size: 8px;
+  letter-spacing: 1px;
+  padding: 5px 4px 4px;
+  cursor: pointer;
+  text-align: center;
+  line-height: 1.4;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.banner-btn:hover { border-color: var(--accent); color: var(--text); }
+
+.banner-btn.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(var(--accent-rgb), 0.06);
+}
+
+.banner-btn .btn-platform { display: block; font-weight: 700; }
+.banner-btn .btn-dims { display: block; font-size: 7px; color: var(--dim); margin-top: 1px; }
+.banner-btn.active .btn-dims { color: var(--dim2); }
+
+.btn-banner { margin-top: 0; }
 
 /* ── PREVIEW AREA ────────────────────────────────────────────────────── */
 
