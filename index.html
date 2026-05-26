@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DITHERPUNK — Image Dithering Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-title">DITHERPUNK</span>
+      <span class="brand-sub">▓▒░ image dithering studio</span>
+    </div>
+
+    <div class="controls-scroll">
+
+      <section class="control-group">
+        <div class="group-label"><span class="num">01</span> IMAGE</div>
+        <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="Upload image">
+          <span class="dz-icon">⊕</span>
+          <span class="dz-text">drop image or click to upload</span>
+          <span class="dz-sub">jpg · png · webp · gif · paste from clipboard</span>
+        </div>
+        <input type="file" id="file-input" accept="image/*">
+      </section>
+
+      <section class="control-group">
+        <div class="group-label"><span class="num">02</span> ALGORITHM</div>
+        <select id="algorithm" aria-label="Dithering algorithm">
+          <option value="threshold">Threshold</option>
+          <option value="floydSteinberg" selected>Floyd-Steinberg</option>
+          <option value="atkinson">Atkinson</option>
+          <option value="jjn">Jarvis-Judice-Ninke</option>
+          <optgroup label="─── Ordered ───────────────">
+            <option value="bayer2">Bayer 2×2</option>
+            <option value="bayer4">Bayer 4×4</option>
+            <option value="bayer8">Bayer 8×8</option>
+            <option value="bayer16">Bayer 16×16</option>
+          </optgroup>
+          <optgroup label="─── Other ──────────────────">
+            <option value="riemersma">Riemersma (Hilbert)</option>
+            <option value="whiteNoise">White Noise</option>
+          </optgroup>
+        </select>
+      </section>
+
+      <section class="control-group">
+        <div class="group-label"><span class="num">03</span> PALETTE</div>
+        <div class="palette-presets" id="palette-presets" role="group" aria-label="Palette presets"></div>
+        <div class="color-row">
+          <label class="color-label">
+            <span class="color-name">FOREGROUND</span>
+            <input type="color" id="fg-color" value="#ffffff" aria-label="Foreground color">
+          </label>
+          <label class="color-label">
+            <span class="color-name">BACKGROUND</span>
+            <input type="color" id="bg-color" value="#000000" aria-label="Background color">
+          </label>
+        </div>
+      </section>
+
+      <section class="control-group">
+        <div class="group-label"><span class="num">04</span> ADJUSTMENTS</div>
+
+        <div class="slider-row">
+          <div class="slider-header">
+            <span class="slider-name">BRIGHTNESS</span>
+            <span class="slider-val" id="brightness-val">0</span>
+          </div>
+          <input type="range" id="brightness" min="-100" max="100" value="0" aria-label="Brightness">
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-header">
+            <span class="slider-name">CONTRAST</span>
+            <span class="slider-val" id="contrast-val">0</span>
+          </div>
+          <input type="range" id="contrast" min="-100" max="100" value="0" aria-label="Contrast">
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-header">
+            <span class="slider-name">PIXEL SCALE</span>
+            <span class="slider-val" id="pixel-scale-val">1×</span>
+          </div>
+          <input type="range" id="pixel-scale" min="1" max="8" step="1" value="1" aria-label="Pixel scale">
+          <div class="slider-hint">higher = chunkier, more retro pixels</div>
+        </div>
+      </section>
+
+      <section class="control-group">
+        <div class="group-label"><span class="num">05</span> EXPORT</div>
+        <button class="btn-download" id="download" disabled>⊞ DOWNLOAD PNG</button>
+        <p class="export-hint">Output is full resolution · ready for wallpaper use</p>
+      </section>
+
+    </div>
+  </aside>
+
+  <main class="preview-area">
+    <div class="canvas-container">
+      <div class="empty-state" id="empty-state">
+        <pre class="ascii-art">
+  ┌──────────────────────┐
+  │ ▓▓▓▒▒▒░░░   ▓▓▓▒░   │
+  │ ▓     ░   ▓▓▓   ░   │
+  │ ▓▓▓▒▒░  ▓░   ░  ░   │
+  │     ░▓  ▓░  ░▓  ░   │
+  │ ▓▓▓░  ░  ░▓▓░  ░    │
+  └──────────────────────┘</pre>
+        <p class="empty-msg">AWAITING INPUT</p>
+        <p class="empty-sub">drop · click · paste an image to begin</p>
+      </div>
+      <canvas id="canvas" style="display:none" aria-label="Dithered image preview"></canvas>
+      <div class="processing" id="processing" aria-live="polite">
+        <span class="processing-text">PROCESSING</span>
+      </div>
+    </div>
+    <footer class="status-bar" id="canvas-info"></footer>
+  </main>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
