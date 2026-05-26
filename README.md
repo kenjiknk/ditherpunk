@@ -89,4 +89,4 @@ Any modern browser with ES Modules support (Chrome 61+, Firefox 60+, Safari 11+)
 
 ## License
 
-[MIT](LICENSE) © 2025 kenjiknk
+[MIT](LICENSE) © 2026 kenjiknk
